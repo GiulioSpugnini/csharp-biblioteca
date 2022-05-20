@@ -1,5 +1,7 @@
 ﻿
 using System;
+using System.IO;
+
 /*
 Si vuole progettare un sistema per la gestione di una biblioteca.
 Gli utenti registrati al sistema, fornendo 
@@ -46,90 +48,161 @@ namespace csharp_biblioteca
         static void Main(string[] args)
         {
             Biblioteca b = new Biblioteca("Comunale");
-            List<string> list = new List<string>();
-            if (File.Exists("prova.txt"))
-                b.RestoreUtenti("prova.txt");
-            else
-                Console.WriteLine("Il file non esiste");
+            // GESTIONE FILE DI CONFIGURAZIONE
+            string vPublic = Environment.GetEnvironmentVariable("PUBLIC");
+            if (vPublic != null)
+                Console.WriteLine("variabile d'ambiente {0}", vPublic);
 
-            Scaffale s1 = new Scaffale("A001");
-            Scaffale s2 = new Scaffale("A002");
-            Scaffale s3 = new Scaffale("A003");
+            vPublic += "\\Biblioteca";
+            string mioPath = @"C:\Users\Matteo\corso_net\csharp-biblioteca\bin\Debug\net6.0\biblioteca.txt";
+            //Verifico se il file biblioteca esiste nella variabile d'ambiente, se non esiste creo la cartella Biblioteca
 
-            #region "Libro 1"
-            Libro l1 = new Libro("ASBS1", "Titolo 1", 2000, "Storia", 200);
-            Autore a1 = new Autore("Nome 1", "Cognome 1");
-            Autore a2 = new Autore("Nome 2", "Cognome 2");
-            l1.Autori.Add(a1);
-            l1.Autori.Add(a2);
-            l1.Scaffale = s1;
 
-            b.Documenti.Add(l1);
-            #endregion
-
-            #region "Libro 2"
-            Libro l2 = new Libro("ASBS2", "Titolo 2", 1996, "Storia", 312);
-            Autore a3 = new Autore("Nome 3", "Cognome 3");
-            Autore a4 = new Autore("Nome 4", "Cognome 4");
-            l2.Autori.Add(a3);
-            l2.Autori.Add(a4);
-            l2.Scaffale = s2;
-
-            b.Documenti.Add(l2);
-            #endregion
-
-            #region "DVD"
-            DVD dvd1 = new DVD("Codice1", "Titolo 3", 2016, "Storia", 112);
-            dvd1.Autori.Add(a3);
-            dvd1.Scaffale = s3;
-
-            b.Documenti.Add(dvd1);
-            #endregion
-
-            Utente u1 = new Utente("Nome 1", "Cognome 1", "Telefono 1", "Email 1", "Password 1");
-
-            b.Utenti.Add(u1);
-
-            StreamWriter sw = new StreamWriter("lista.utenti");
-
-            Prestito p1 = new Prestito("A89321", new DateTime(2018, 2, 22), new DateTime(2022, 1, 13), u1, l1);
-            Prestito p2 = new Prestito("B39393", new DateTime(2018, 4, 18), new DateTime(2020, 6, 28), u1, l2);
-
-            b.Prestiti.Add(p1);
-            b.Prestiti.Add(p2);
-
-            Console.WriteLine("\n\nSearchByCodice: ASBS1\n\n");
-
-            List<Documento> results = b.SearchByCodice("ASBS1");
-
-            foreach (Documento doc in results)
+            if (!Directory.Exists(vPublic))
             {
-                Console.WriteLine(doc.ToString());
 
-                if (doc.Autori.Count > 0)
+                Console.WriteLine("Dove vuoi storare i file?");
+                Console.WriteLine("Sul computer centrale (C3): premi 1");
+                Console.WriteLine("Sul sul tuo computer: premi 2");
+
+                string choise = Console.ReadLine();
+                int userChoice = Convert.ToInt32(choise);
+
+
+                if (userChoice == 1)
                 {
+                    Directory.CreateDirectory(vPublic);
+                    Console.WriteLine("Ho creato la cartella");
 
-                    Console.WriteLine("Autori");
+                    //CREO LA CARTELLA BIBLIOTECA NEL PC REMOTO E SCRIVO I FILE
+                    string pathCompleto = vPublic + @"\biblioteca.txt";
+                    b.SaveUtenti(pathCompleto);
 
-                    foreach (Autore a in doc.Autori)
+
+
+                    //CREO IL FILE biblioteca.txt NELLA CARTELLA BIN DOVE MI SEGNO IL PATH DELLA CARTELLA DEL COMPUTER REMOTO
+                    StreamWriter sr = new StreamWriter("biblioteca.txt");
+                    sr.WriteLine(pathCompleto);
+
+                    sr.Close();
+
+                }
+                else if (userChoice == 2)
+                {
+                    //CREO IL FILE NEL MIO COMPUTER E LO USO COME DATABASE PER SCRIVERE I DATI 
+                    b.SaveUtenti("biblioteca.txt");
+
+                }
+                else
+                {
+                    Environment.Exit(0);
+                }
+
+            }
+            else
+            {
+
+                Console.WriteLine("la directory esiste");
+                if (File.Exists(vPublic + @"\biblioteca.txt"))
+                {
+                    //QUI LEGGERO I DATI DAL FILE e mi estrapolo il percorso per andare a leggere i file
+                    string pathCompleto = vPublic + @"\biblioteca.txt";
+                    b.RestoreUtenti(pathCompleto);
+                }
+                else if (File.Exists(mioPath))
+                {
+                    b.RestoreUtenti(mioPath);
+                }
+                else
+                {
+                    Environment.Exit(0);
+                }
+
+                // List<string> list = new List<string>();
+                // if (File.Exists(vPublicEnv + "biblioteca.txt"))
+                // b.RestoreUtenti("biblioteca.txt");
+                // else
+                //    Console.WriteLine("Il file non esiste");
+
+                Scaffale s1 = new Scaffale("A001");
+                Scaffale s2 = new Scaffale("A002");
+                Scaffale s3 = new Scaffale("A003");
+
+                #region "Libro 1"
+                Libro l1 = new Libro("ASBS1", "Titolo 1", 2000, "Storia", 200);
+                Autore a1 = new Autore("Nome 1", "Cognome 1");
+                Autore a2 = new Autore("Nome 2", "Cognome 2");
+                l1.Autori.Add(a1);
+                l1.Autori.Add(a2);
+                l1.Scaffale = s1;
+
+                b.Documenti.Add(l1);
+                #endregion
+
+                #region "Libro 2"
+                Libro l2 = new Libro("ASBS2", "Titolo 2", 1996, "Storia", 312);
+                Autore a3 = new Autore("Nome 3", "Cognome 3");
+                Autore a4 = new Autore("Nome 4", "Cognome 4");
+                l2.Autori.Add(a3);
+                l2.Autori.Add(a4);
+                l2.Scaffale = s2;
+
+                b.Documenti.Add(l2);
+                #endregion
+
+                #region "DVD"
+                DVD dvd1 = new DVD("Codice1", "Titolo 3", 2016, "Storia", 112);
+                dvd1.Autori.Add(a3);
+                dvd1.Scaffale = s3;
+
+                b.Documenti.Add(dvd1);
+                #endregion
+
+                Utente u1 = new Utente("Nome 1", "Cognome 1", "Telefono 1", "Email 1", "Password 1");
+
+                b.Utenti.Add(u1);
+
+                StreamWriter sw = new StreamWriter("lista.utenti");
+
+                Prestito p1 = new Prestito("A89321", new DateTime(2018, 2, 22), new DateTime(2022, 1, 13), u1, l1);
+                Prestito p2 = new Prestito("B39393", new DateTime(2018, 4, 18), new DateTime(2020, 6, 28), u1, l2);
+
+                b.Prestiti.Add(p1);
+                b.Prestiti.Add(p2);
+
+                Console.WriteLine("\n\nSearchByCodice: ASBS1\n\n");
+
+                List<Documento> results = b.SearchByCodice("ASBS1");
+
+                foreach (Documento doc in results)
+                {
+                    Console.WriteLine(doc.ToString());
+
+                    if (doc.Autori.Count > 0)
                     {
-                        Console.WriteLine(a.ToString());
+
+                        Console.WriteLine("Autori");
+
+                        foreach (Autore a in doc.Autori)
+                        {
+                            Console.WriteLine(a.ToString());
+                        }
                     }
                 }
+
+                Console.WriteLine("\n\nSearchPrestiti: Nome 1, Cognome 1\n\n");
+
+                List<Prestito> prestiti = b.SearchPrestiti("Nome 1", "Cognome 1");
+
+                foreach (Prestito p in prestiti)
+                {
+                    Console.WriteLine(p.ToString());
+                }
+                //Come ultima istruzione del programma o ogni volta che aggiungete un nuovo utente,salvo gli utenti sul file
+                //b.SaveUtenti("biblioteca.txt");
+                Config.ReadAllSettings();
             }
-
-            Console.WriteLine("\n\nSearchPrestiti: Nome 1, Cognome 1\n\n");
-
-            List<Prestito> prestiti = b.SearchPrestiti("Nome 1", "Cognome 1");
-
-            foreach (Prestito p in prestiti)
-            {
-                Console.WriteLine(p.ToString());
-            }
-            //Come ultima istruzione del programma o ogni volta che aggiungete un nuovo utente,salvo gli utenti sul file
-            b.SaveUtenti("prova.txt");
         }
-
 
         enum Stato { Disponibile, Prestito }
 
@@ -204,20 +277,20 @@ namespace csharp_biblioteca
             public bool RestoreUtenti(string filename)
             {
                 //ricostruisce la lista degli utenti leggendo il file su cui sono stati scritti
-                
+
                 StreamReader sr = new StreamReader(filename);
                 string line = sr.ReadLine();
                 {
-                    while (line!= "")
+                    while (line != "")
                     {
-                        string[] v= line.Split(',');
-                        string Nome= v[0];
-                        string Cognome= v[1];
-                        string Telefono= v[2];
-                        string Email= v[3];
-                        string Password= v[4];
+                        string[] v = line.Split(',');
+                        string Nome = v[0];
+                        string Cognome = v[1];
+                        string Telefono = v[2];
+                        string Email = v[3];
+                        string Password = v[4];
 
-                        Utente utente= new Utente(Nome,Cognome,Telefono,Email,Password);
+                        Utente utente = new Utente(Nome, Cognome, Telefono, Email, Password);
                     }
                 }
                 sr.Close();

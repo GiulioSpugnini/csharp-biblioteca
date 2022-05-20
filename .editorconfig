@@ -1,0 +1,9 @@
+# Per altre informazioni sul file con estensione editorconfig, vedere https://aka.ms/editorconfigdocs
+
+# All files
+[*]
+indent_style = space
+
+# Xml files
+[*.xml]
+indent_size = 2

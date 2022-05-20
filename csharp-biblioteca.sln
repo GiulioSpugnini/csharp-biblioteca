@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "csharp-biblioteca", "csharp-biblioteca.csproj", "{5EC789EB-3067-4C14-B64A-3B807EBCAE98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "csharp-biblioteca", "csharp-biblioteca.csproj", "{5EC789EB-3067-4C14-B64A-3B807EBCAE98}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E2BF2484-8BA0-41D5-AAA8-19050CB1FCC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
