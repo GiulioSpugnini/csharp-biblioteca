@@ -1,4 +1,4 @@
-﻿   
+﻿
 using System;
 /*
 Si vuole progettare un sistema per la gestione di una biblioteca.
@@ -46,6 +46,11 @@ namespace csharp_biblioteca
         static void Main(string[] args)
         {
             Biblioteca b = new Biblioteca("Comunale");
+            List<string> list = new List<string>();
+            if (File.Exists("prova.txt"))
+                b.RestoreUtenti("prova.txt");
+            else
+                Console.WriteLine("Il file non esiste");
 
             Scaffale s1 = new Scaffale("A001");
             Scaffale s2 = new Scaffale("A002");
@@ -85,6 +90,8 @@ namespace csharp_biblioteca
 
             b.Utenti.Add(u1);
 
+            StreamWriter sw = new StreamWriter("lista.utenti");
+
             Prestito p1 = new Prestito("A89321", new DateTime(2018, 2, 22), new DateTime(2022, 1, 13), u1, l1);
             Prestito p2 = new Prestito("B39393", new DateTime(2018, 4, 18), new DateTime(2020, 6, 28), u1, l2);
 
@@ -101,9 +108,9 @@ namespace csharp_biblioteca
 
                 if (doc.Autori.Count > 0)
                 {
-                   
+
                     Console.WriteLine("Autori");
-                    
+
                     foreach (Autore a in doc.Autori)
                     {
                         Console.WriteLine(a.ToString());
@@ -119,7 +126,8 @@ namespace csharp_biblioteca
             {
                 Console.WriteLine(p.ToString());
             }
-
+            //Come ultima istruzione del programma o ogni volta che aggiungete un nuovo utente,salvo gli utenti sul file
+            b.SaveUtenti("prova.txt");
         }
 
 
@@ -179,6 +187,41 @@ namespace csharp_biblioteca
                 this.Documenti = new List<Documento>();
                 this.Prestiti = new List<Prestito>();
                 this.Utenti = new List<Utente>();
+            }
+            public bool SaveUtenti(string filename)
+            {
+                //salva gli utenti sul filename
+                StreamWriter sw = new StreamWriter(filename);
+                {
+                    foreach (Utente utente in Utenti)
+                    {
+                        sw.WriteLine("{0},{1},{2},{3},{4}", utente.Nome, utente.Cognome, utente.Telefono, utente.Email, utente.Password);
+                    }
+                }
+                sw.Close();
+                return true;
+            }
+            public bool RestoreUtenti(string filename)
+            {
+                //ricostruisce la lista degli utenti leggendo il file su cui sono stati scritti
+                
+                StreamReader sr = new StreamReader(filename);
+                string line = sr.ReadLine();
+                {
+                    while (line!= "")
+                    {
+                        string[] v= line.Split(',');
+                        string Nome= v[0];
+                        string Cognome= v[1];
+                        string Telefono= v[2];
+                        string Email= v[3];
+                        string Password= v[4];
+
+                        Utente utente= new Utente(Nome,Cognome,Telefono,Email,Password);
+                    }
+                }
+                sr.Close();
+                return true;
             }
 
             public List<Documento> SearchByCodice(string Codice)
@@ -291,7 +334,7 @@ namespace csharp_biblioteca
         {
             public string Telefono { get; set; }
             public string Email { get; set; }
-            public string Password { private get; set; }
+            public string Password { get; set; }
 
             public Utente(string Nome, string Cognome, string Telefono, string Email, string Password) : base(Nome, Cognome)
             {
