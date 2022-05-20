@@ -48,13 +48,58 @@ namespace csharp_biblioteca
         static void Main(string[] args)
         {
             Biblioteca b = new Biblioteca("Comunale");
+            
+
+                // List<string> list = new List<string>();
+                // if (File.Exists(vPublicEnv + "biblioteca.txt"))
+                // b.RestoreUtenti("biblioteca.txt");
+                // else
+                //    Console.WriteLine("Il file non esiste");
+
+                Scaffale s1 = new Scaffale("A001");
+                Scaffale s2 = new Scaffale("A002");
+                Scaffale s3 = new Scaffale("A003");
+
+                #region "Libro 1"
+                Libro l1 = new Libro("ASBS1", "Titolo 1", 2000, "Storia", 200);
+                Autore a1 = new Autore("Nome 1", "Cognome 1");
+                Autore a2 = new Autore("Nome 2", "Cognome 2");
+                l1.Autori.Add(a1);
+                l1.Autori.Add(a2);
+                l1.Scaffale = s1;
+
+                b.Documenti.Add(l1);
+                #endregion
+
+                #region "Libro 2"
+                Libro l2 = new Libro("ASBS2", "Titolo 2", 1996, "Storia", 312);
+                Autore a3 = new Autore("Nome 3", "Cognome 3");
+                Autore a4 = new Autore("Nome 4", "Cognome 4");
+                l2.Autori.Add(a3);
+                l2.Autori.Add(a4);
+                l2.Scaffale = s2;
+
+                b.Documenti.Add(l2);
+                #endregion
+
+                #region "DVD"
+                DVD dvd1 = new DVD("Codice1", "Titolo 3", 2016, "Storia", 112);
+                dvd1.Autori.Add(a3);
+                dvd1.Scaffale = s3;
+
+                b.Documenti.Add(dvd1);
+                #endregion
+
+                Utente u1 = new Utente("Nome 1", "Cognome 1", "Telefono 1", "Email 1", "Password 1");
+
+                b.Utenti.Add(u1);
             // GESTIONE FILE DI CONFIGURAZIONE
             string vPublic = Environment.GetEnvironmentVariable("PUBLIC");
             if (vPublic != null)
                 Console.WriteLine("variabile d'ambiente {0}", vPublic);
 
             vPublic += "\\Biblioteca";
-            string mioPath = @"C:\Users\Matteo\corso_net\csharp-biblioteca\bin\Debug\net6.0\biblioteca.txt";
+            string mioPath = @"C:\Users\Giulio\Biblioteca\biblioteca.txt";
             //Verifico se il file biblioteca esiste nella variabile d'ambiente, se non esiste creo la cartella Biblioteca
 
 
@@ -117,51 +162,6 @@ namespace csharp_biblioteca
                 {
                     Environment.Exit(0);
                 }
-
-                // List<string> list = new List<string>();
-                // if (File.Exists(vPublicEnv + "biblioteca.txt"))
-                // b.RestoreUtenti("biblioteca.txt");
-                // else
-                //    Console.WriteLine("Il file non esiste");
-
-                Scaffale s1 = new Scaffale("A001");
-                Scaffale s2 = new Scaffale("A002");
-                Scaffale s3 = new Scaffale("A003");
-
-                #region "Libro 1"
-                Libro l1 = new Libro("ASBS1", "Titolo 1", 2000, "Storia", 200);
-                Autore a1 = new Autore("Nome 1", "Cognome 1");
-                Autore a2 = new Autore("Nome 2", "Cognome 2");
-                l1.Autori.Add(a1);
-                l1.Autori.Add(a2);
-                l1.Scaffale = s1;
-
-                b.Documenti.Add(l1);
-                #endregion
-
-                #region "Libro 2"
-                Libro l2 = new Libro("ASBS2", "Titolo 2", 1996, "Storia", 312);
-                Autore a3 = new Autore("Nome 3", "Cognome 3");
-                Autore a4 = new Autore("Nome 4", "Cognome 4");
-                l2.Autori.Add(a3);
-                l2.Autori.Add(a4);
-                l2.Scaffale = s2;
-
-                b.Documenti.Add(l2);
-                #endregion
-
-                #region "DVD"
-                DVD dvd1 = new DVD("Codice1", "Titolo 3", 2016, "Storia", 112);
-                dvd1.Autori.Add(a3);
-                dvd1.Scaffale = s3;
-
-                b.Documenti.Add(dvd1);
-                #endregion
-
-                Utente u1 = new Utente("Nome 1", "Cognome 1", "Telefono 1", "Email 1", "Password 1");
-
-                b.Utenti.Add(u1);
-
                 StreamWriter sw = new StreamWriter("lista.utenti");
 
                 Prestito p1 = new Prestito("A89321", new DateTime(2018, 2, 22), new DateTime(2022, 1, 13), u1, l1);
@@ -280,8 +280,9 @@ namespace csharp_biblioteca
 
                 StreamReader sr = new StreamReader(filename);
                 string line = sr.ReadLine();
+                List<Utente> listU = new List<Utente>();
                 {
-                    while (line != "")
+                    while ((line = sr.ReadLine()) != null)
                     {
                         string[] v = line.Split(',');
                         string Nome = v[0];
